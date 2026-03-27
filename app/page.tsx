@@ -70,6 +70,28 @@ export default function Home() {
     }
   }
 
+  async function toggleComplete(id: string, completed: boolean) {
+    setError(null);
+    try {
+      const res = await fetch(`/api/tasks?id=${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ completed }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+        throw new Error(data?.error ?? `Update failed (${res.status}).`);
+      }
+      const data = (await res.json()) as { task: Task };
+      setTasks((prev) => prev.map((t) => (t.id === id ? data.task : t)));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setError(message);
+    }
+  }
+
   return (
     <div className="flex min-h-screen flex-col items-center bg-zinc-50 p-6 font-sans dark:bg-black">
       <div className="w-full max-w-3xl space-y-6">
@@ -106,6 +128,7 @@ export default function Home() {
             tasks={tasks}
             onDeleteTask={deleteTask}
             onEditTask={editTask}
+            onToggleCompleteTask={toggleComplete}
           />
         )}
       </div>

@@ -7,10 +7,12 @@ export default function TaskList({
   tasks,
   onDeleteTask,
   onEditTask,
+  onToggleCompleteTask,
 }: {
   tasks: Task[];
   onDeleteTask: (id: string) => void;
   onEditTask: (id: string, newText: string) => void;
+  onToggleCompleteTask: (id: string, completed: boolean) => void;
 }) {
   return (
     <ul className="flex w-full flex-col gap-2">
@@ -20,6 +22,9 @@ export default function TaskList({
             task={task}
             onDelete={() => onDeleteTask(task.id)}
             onEdit={(newText) => onEditTask(task.id, newText)}
+            onToggleComplete={(completed) =>
+              onToggleCompleteTask(task.id, completed)
+            }
           />
         </li>
       ))}

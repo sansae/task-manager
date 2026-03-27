@@ -7,10 +7,12 @@ export default function TaskItem({
   task,
   onDelete,
   onEdit,
+  onToggleComplete,
 }: {
   task: Task;
   onDelete: () => void;
   onEdit: (newText: string) => void;
+  onToggleComplete: (completed: boolean) => void;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(task.text);
@@ -34,8 +36,17 @@ export default function TaskItem({
   }
 
   return (
-    <div className="flex items-start justify-between gap-4 rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-black">
-      <div className="min-w-0">
+    <div className="flex items-start justify-between gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-black">
+      <div className="flex min-w-0 flex-1 items-start gap-3">
+        <input
+          type="checkbox"
+          checked={task.completed}
+          onChange={(e) => onToggleComplete(e.target.checked)}
+          className="mt-1 h-5 w-5 shrink-0 cursor-pointer rounded-full accent-zinc-900 dark:accent-zinc-100"
+          aria-label={`Mark "${task.text}" as completed`}
+        />
+
+        <div className="min-w-0">
         {isEditing ? (
           <input
             value={draft}
@@ -45,7 +56,13 @@ export default function TaskItem({
           />
         ) : (
           <>
-            <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            <p
+              className={`truncate text-sm font-medium ${
+                task.completed
+                  ? "text-zinc-500 line-through dark:text-zinc-400"
+                  : "text-zinc-900 dark:text-zinc-100"
+              }`}
+            >
               {task.text}
             </p>
             <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
@@ -53,6 +70,7 @@ export default function TaskItem({
             </p>
           </>
         )}
+        </div>
       </div>
 
       <div className="flex shrink-0 gap-2">

@@ -33,6 +33,7 @@ export async function POST(req: Request) {
     id: createId(),
     text,
     createdAt: new Date().toISOString(),
+    completed: false,
   };
 
   tasks.unshift(task);
@@ -64,23 +65,38 @@ export async function PATCH(req: Request) {
   }
 
   const body = (await req.json().catch(() => null)) as
-    | { text?: unknown }
+    | { text?: unknown; completed?: unknown }
     | null;
-  const text = typeof body?.text === "string" ? body.text.trim() : "";
-
-  if (!text) {
-    return NextResponse.json(
-      { error: "Missing or empty `text`." },
-      { status: 400 }
-    );
-  }
+  const textInput = body?.text;
+  const completedInput = body?.completed;
+  const hasText = typeof textInput === "string";
+  const text = hasText ? textInput.trim() : "";
+  const hasCompleted = typeof completedInput === "boolean";
 
   const idx = tasks.findIndex((t) => t.id === id);
   if (idx === -1) {
     return NextResponse.json({ error: "Task not found." }, { status: 404 });
   }
 
-  tasks[idx] = { ...tasks[idx], text };
+  if (!hasText && !hasCompleted) {
+    return NextResponse.json(
+      { error: "Provide `text` or `completed`." },
+      { status: 400 }
+    );
+  }
+
+  if (hasText && !text) {
+    return NextResponse.json(
+      { error: "Missing or empty `text`." },
+      { status: 400 }
+    );
+  }
+
+  const updates: Partial<Task> = {};
+  if (hasText) updates.text = text;
+  if (hasCompleted) updates.completed = completedInput;
+
+  tasks[idx] = { ...tasks[idx], ...updates };
   return NextResponse.json({ task: tasks[idx] });
 }
 
