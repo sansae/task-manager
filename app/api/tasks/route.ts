@@ -56,3 +56,31 @@ export async function DELETE(req: Request) {
   return NextResponse.json({ task });
 }
 
+export async function PATCH(req: Request) {
+  const url = new URL(req.url);
+  const id = url.searchParams.get("id")?.trim() ?? "";
+  if (!id) {
+    return NextResponse.json({ error: "Missing `id`." }, { status: 400 });
+  }
+
+  const body = (await req.json().catch(() => null)) as
+    | { text?: unknown }
+    | null;
+  const text = typeof body?.text === "string" ? body.text.trim() : "";
+
+  if (!text) {
+    return NextResponse.json(
+      { error: "Missing or empty `text`." },
+      { status: 400 }
+    );
+  }
+
+  const idx = tasks.findIndex((t) => t.id === id);
+  if (idx === -1) {
+    return NextResponse.json({ error: "Task not found." }, { status: 404 });
+  }
+
+  tasks[idx] = { ...tasks[idx], text };
+  return NextResponse.json({ task: tasks[idx] });
+}
+
