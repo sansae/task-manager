@@ -35,6 +35,12 @@ export default function TaskItem({
     setIsEditing(false);
   }
 
+  function confirmAndDelete() {
+    const ok = window.confirm(`Delete this task?\n\n"${task.text}"`);
+    if (!ok) return;
+    onDelete();
+  }
+
   return (
     <div className="flex items-start justify-between gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-black">
       <div className="flex min-w-0 flex-1 items-start gap-3">
@@ -103,7 +109,7 @@ export default function TaskItem({
             </button>
             <button
               type="button"
-              onClick={onDelete}
+              onClick={confirmAndDelete}
               className="rounded-md border px-3 py-1.5 text-xs font-medium border-zinc-200 bg-red-600 text-white hover:bg-white hover:text-red-600 hover:border-red-600 hover:cursor-pointer"
               // className="rounded-md border border-zinc-200 px-3 py-1.5 text-xs font-medium transition-colors bg-red-600 text-white"
             >
