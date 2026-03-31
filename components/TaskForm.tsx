@@ -65,7 +65,7 @@ export default function TaskForm({
         <button
           type="submit"
           disabled={loading || !text.trim()}
-          className="h-10 rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white transition-opacity disabled:opacity-50 dark:bg-zinc-100 dark:text-black"
+          className="h-10 rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white transition-opacity disabled:opacity-50 dark:bg-zinc-100 dark:text-black hover:bg-blue-600 hover:text-white hover:cursor-pointer"
         >
           {loading ? "Adding..." : "Add"}
         </button>

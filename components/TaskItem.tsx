@@ -80,14 +80,14 @@ export default function TaskItem({
               type="button"
               onClick={saveEditing}
               disabled={!trimmedDraft}
-              className="rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white transition-opacity disabled:opacity-50 dark:bg-zinc-100 dark:text-black"
+              className="rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white transition-opacity disabled:opacity-50 dark:bg-zinc-100 dark:text-black hover:bg-blue-600 hover:text-white hover:cursor-pointer"
             >
               Save
             </button>
             <button
               type="button"
               onClick={cancelEditing}
-              className="rounded-md border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-900"
+              className="rounded-md border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-900 hover:bg-white hover:text-red-600 hover:border-red-600 hover:cursor-pointer"
             >
               Cancel
             </button>
@@ -97,14 +97,15 @@ export default function TaskItem({
             <button
               type="button"
               onClick={startEditing}
-              className="rounded-md border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-900"
+              className="rounded-md border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-blue-600 hover:text-white dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-900 hover:cursor-pointer"
             >
               Edit
             </button>
             <button
               type="button"
               onClick={onDelete}
-              className="rounded-md border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-900"
+              className="rounded-md border px-3 py-1.5 text-xs font-medium border-zinc-200 bg-red-600 text-white hover:bg-white hover:text-red-600 hover:border-red-600 hover:cursor-pointer"
+              // className="rounded-md border border-zinc-200 px-3 py-1.5 text-xs font-medium transition-colors bg-red-600 text-white"
             >
               Delete
             </button>
