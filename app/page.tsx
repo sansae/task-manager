@@ -1,14 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Task } from "@/lib/task";
 import TaskForm from "@/components/TaskForm";
 import TaskList from "@/components/TaskList";
+
+type TaskFilter = "All" | "Active" | "Completed";
 
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<TaskFilter>("All");
+
+  const filteredTasks = useMemo(() => {
+    if (activeFilter === "Active") return tasks.filter((t) => !t.completed);
+    if (activeFilter === "Completed") return tasks.filter((t) => t.completed);
+    return tasks;
+  }, [tasks, activeFilter]);
 
   async function loadTasks() {
     setError(null);
@@ -124,12 +133,50 @@ export default function Home() {
             No tasks yet. Add one above.
           </p>
         ) : (
-          <TaskList
-            tasks={tasks}
-            onDeleteTask={deleteTask}
-            onEditTask={editTask}
-            onToggleCompleteTask={toggleComplete}
-          />
+          <div className="space-y-4">
+            <div
+              className="flex flex-wrap gap-2"
+              role="group"
+              aria-label="Filter tasks"
+            >
+              {(
+                [
+                  { key: "All" as const, label: "All" },
+                  { key: "Active" as const, label: "Active" },
+                  { key: "Completed" as const, label: "Completed" },
+                ] as const
+              ).map(({ key, label }) => {
+                const isSelected = activeFilter === key;
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setActiveFilter(key)}
+                    className={
+                      isSelected
+                        ? "rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm dark:bg-zinc-100 dark:text-zinc-900"
+                        : "rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-600 transition-colors dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-900 hover:bg-blue-600 hover:text-white hover:cursor-pointer"
+                    }
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {filteredTasks.length === 0 ? (
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                No tasks match this filter.
+              </p>
+            ) : (
+              <TaskList
+                tasks={filteredTasks}
+                onDeleteTask={deleteTask}
+                onEditTask={editTask}
+                onToggleCompleteTask={toggleComplete}
+              />
+            )}
+          </div>
         )}
       </div>
     </div>
