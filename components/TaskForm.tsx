@@ -54,7 +54,7 @@ export default function TaskForm({
         Add task
       </label>
 
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -65,7 +65,7 @@ export default function TaskForm({
         <button
           type="submit"
           disabled={loading || !text.trim()}
-          className="h-10 rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white transition-opacity disabled:opacity-50 dark:bg-zinc-100 dark:text-black hover:bg-blue-600 hover:text-white hover:cursor-pointer"
+          className="h-10 w-full rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white transition-opacity disabled:opacity-50 dark:bg-zinc-100 dark:text-black hover:bg-blue-600 hover:text-white hover:cursor-pointer sm:w-auto"
         >
           {loading ? "Adding..." : "Add"}
         </button>

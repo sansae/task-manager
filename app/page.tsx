@@ -93,10 +93,10 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-zinc-50 p-6 font-sans dark:bg-black">
+    <div className="flex min-h-screen flex-col items-center bg-zinc-50 px-4 py-6 font-sans dark:bg-black sm:px-6">
       <div className="w-full max-w-3xl space-y-6">
         <header className="space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-3xl">
             Task Manager
           </h1>
           <p className="text-zinc-600 dark:text-zinc-400">

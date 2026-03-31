@@ -42,7 +42,7 @@ export default function TaskItem({
   }
 
   return (
-    <div className="flex items-start justify-between gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-black">
+    <div className="flex flex-col gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-black sm:flex-row sm:items-start sm:justify-between">
       <div className="flex min-w-0 flex-1 items-start gap-3">
         <input
           type="checkbox"
@@ -53,47 +53,47 @@ export default function TaskItem({
         />
 
         <div className="min-w-0">
-        {isEditing ? (
-          <input
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-black dark:text-zinc-100"
-            autoFocus
-          />
-        ) : (
-          <>
-            <p
-              className={`truncate text-sm font-medium ${
-                task.completed
-                  ? "text-zinc-500 line-through dark:text-zinc-400"
-                  : "text-zinc-900 dark:text-zinc-100"
-              }`}
-            >
-              {task.text}
-            </p>
-            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-              {new Date(task.createdAt).toLocaleString()}
-            </p>
-          </>
-        )}
+          {isEditing ? (
+            <input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-black dark:text-zinc-100"
+              autoFocus
+            />
+          ) : (
+            <>
+              <p
+                className={`text-wrap truncate text-sm font-medium ${
+                  task.completed
+                    ? "text-zinc-500 line-through dark:text-zinc-400"
+                    : "text-zinc-900 dark:text-zinc-100"
+                }`}
+              >
+                {task.text}
+              </p>
+              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                {new Date(task.createdAt).toLocaleString()}
+              </p>
+            </>
+          )}
         </div>
       </div>
 
-      <div className="flex shrink-0 gap-2">
+      <div className="flex flex-wrap gap-2 sm:shrink-0 sm:flex-nowrap sm:justify-end">
         {isEditing ? (
           <>
             <button
               type="button"
               onClick={saveEditing}
               disabled={!trimmedDraft}
-              className="rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white transition-opacity disabled:opacity-50 dark:bg-zinc-100 dark:text-black hover:bg-blue-600 hover:text-white hover:cursor-pointer"
+              className="w-full rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white transition-opacity disabled:opacity-50 dark:bg-zinc-100 dark:text-black hover:bg-blue-600 hover:text-white hover:cursor-pointer sm:w-auto"
             >
               Save
             </button>
             <button
               type="button"
               onClick={cancelEditing}
-              className="rounded-md border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-900 hover:bg-white hover:text-red-600 hover:border-red-600 hover:cursor-pointer"
+              className="w-full rounded-md border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-900 hover:bg-white hover:text-red-600 hover:border-red-600 hover:cursor-pointer sm:w-auto"
             >
               Cancel
             </button>
@@ -103,14 +103,14 @@ export default function TaskItem({
             <button
               type="button"
               onClick={startEditing}
-              className="rounded-md border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-blue-600 hover:text-white dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-900 hover:cursor-pointer"
+              className="w-full rounded-md border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-blue-600 hover:text-white dark:border-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-900 hover:cursor-pointer sm:w-auto"
             >
               Edit
             </button>
             <button
               type="button"
               onClick={confirmAndDelete}
-              className="rounded-md border px-3 py-1.5 text-xs font-medium border-zinc-200 bg-red-600 text-white hover:bg-white hover:text-red-600 hover:border-red-600 hover:cursor-pointer"
+              className="w-full rounded-md border px-3 py-1.5 text-xs font-medium border-zinc-200 bg-red-600 text-white hover:bg-white hover:text-red-600 hover:border-red-600 hover:cursor-pointer sm:w-auto"
               // className="rounded-md border border-zinc-200 px-3 py-1.5 text-xs font-medium transition-colors bg-red-600 text-white"
             >
               Delete
