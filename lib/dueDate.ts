@@ -39,9 +39,11 @@ export function formatDueDateLabel(
   const diffMs = due.getTime() - today.getTime();
   const diffDays = Math.round(diffMs / 86_400_000);
 
+  const d = new Date(dueDate).toLocaleDateString();
+  
   if (diffDays === 0) return "Today";
   if (diffDays === 1) return "Tomorrow";
-  if (diffDays > 1) return `In ${diffDays} days`;
+  if (diffDays > 1) return `In ${diffDays} days (${d})`;
   if (diffDays === -1) return "Yesterday";
   return `${-diffDays} days ago`;
 }
