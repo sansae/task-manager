@@ -85,7 +85,8 @@ export default function TaskItem({
                   {task.priority}
                 </span>
                 <p
-                  className={`min-w-0 flex-1 text-wrap truncate text-sm font-medium ${
+                  onClick={() => startEditing()}
+                  className={`min-w-0 flex-1 text-wrap truncate text-sm font-medium hover:cursor-pointer ${
                     task.completed
                       ? "text-zinc-500 line-through dark:text-zinc-400"
                       : overdue
