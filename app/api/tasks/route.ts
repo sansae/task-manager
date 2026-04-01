@@ -1,5 +1,14 @@
-import type { Task } from "@/lib/task";
+import type { Task, TaskPriority } from "@/lib/task";
 import { NextResponse } from "next/server";
+
+const PRIORITIES: TaskPriority[] = ["High", "Medium", "Low"];
+
+function parsePriority(value: unknown): TaskPriority {
+  if (typeof value === "string" && PRIORITIES.includes(value as TaskPriority)) {
+    return value as TaskPriority;
+  }
+  return "Medium";
+}
 
 // In-memory storage for development/demo purposes.
 // Note: resets when the server restarts.
@@ -18,8 +27,21 @@ export async function GET() {
   return NextResponse.json({ tasks });
 }
 
+function parseOptionalDueDate(value: unknown): string | undefined {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value !== "string") return undefined;
+  const s = value.trim();
+  if (!s) return undefined;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  return undefined;
+}
+
 export async function POST(req: Request) {
-  const body = (await req.json().catch(() => null)) as { text?: unknown } | null;
+  const body = (await req.json().catch(() => null)) as {
+    text?: unknown;
+    priority?: unknown;
+    dueDate?: unknown;
+  } | null;
   const text = typeof body?.text === "string" ? body.text.trim() : "";
 
   if (!text) {
@@ -29,11 +51,16 @@ export async function POST(req: Request) {
     );
   }
 
+  const priority = parsePriority(body?.priority);
+  const dueDate = parseOptionalDueDate(body?.dueDate);
+
   const task: Task = {
     id: createId(),
     text,
     createdAt: new Date().toISOString(),
     completed: false,
+    priority,
+    ...(dueDate !== undefined ? { dueDate } : {}),
   };
 
   tasks.unshift(task);

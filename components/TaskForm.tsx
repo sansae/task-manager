@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Task } from "@/lib/task";
+import type { Task, TaskPriority } from "@/lib/task";
 
 export default function TaskForm({
   onTaskCreated,
@@ -9,6 +9,8 @@ export default function TaskForm({
   onTaskCreated?: (task: Task) => void;
 }) {
   const [text, setText] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [priority, setPriority] = useState<TaskPriority>("Medium");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +26,11 @@ export default function TaskForm({
       const res = await fetch("/api/tasks", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ text: trimmed }),
+        body: JSON.stringify({
+          text: trimmed,
+          priority,
+          ...(dueDate.trim() ? { dueDate: dueDate.trim() } : {}),
+        }),
       });
 
       if (!res.ok) {
@@ -36,6 +42,8 @@ export default function TaskForm({
 
       const data = (await res.json()) as { task: Task };
       setText("");
+      setDueDate("");
+      setPriority("Medium");
       onTaskCreated?.(data.task);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
@@ -52,6 +60,35 @@ export default function TaskForm({
     >
       <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
         Add task
+      </label>
+
+      <label className="flex flex-col gap-1.5 text-sm text-zinc-700 dark:text-zinc-300">
+        <span className="font-medium text-zinc-900 dark:text-zinc-100">
+          Due date (optional)
+        </span>
+        <input
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          disabled={loading}
+          className="h-10 w-full max-w-xs rounded-lg border border-zinc-200 bg-white px-3 text-zinc-900 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-black dark:text-zinc-100 sm:w-auto"
+        />
+      </label>
+
+      <label className="flex flex-col gap-1.5 text-sm text-zinc-700 dark:text-zinc-300">
+        <span className="font-medium text-zinc-900 dark:text-zinc-100">
+          Priority
+        </span>
+        <select
+          value={priority}
+          onChange={(e) => setPriority(e.target.value as TaskPriority)}
+          disabled={loading}
+          className="h-10 w-full max-w-xs rounded-lg border border-zinc-200 bg-white px-3 text-zinc-900 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-black dark:text-zinc-100 sm:w-auto"
+        >
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
       </label>
 
       <div className="flex flex-col gap-2 sm:flex-row">

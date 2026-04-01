@@ -1,7 +1,20 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Task } from "@/lib/task";
+import { formatDueDateLabel, isDueOverdue } from "@/lib/dueDate";
+import type { Task, TaskPriority } from "@/lib/task";
+
+const priorityBadgeClass: Record<
+  TaskPriority,
+  string
+> = {
+  High:
+    "bg-red-100 text-red-800 ring-1 ring-inset ring-red-600/20 dark:bg-red-950/50 dark:text-red-300 dark:ring-red-400/30",
+  Medium:
+    "bg-yellow-100 text-yellow-900 ring-1 ring-inset ring-yellow-600/20 dark:bg-yellow-950/50 dark:text-yellow-200 dark:ring-yellow-400/30",
+  Low:
+    "bg-green-100 text-green-800 ring-1 ring-inset ring-green-600/20 dark:bg-green-950/50 dark:text-green-300 dark:ring-green-400/30",
+};
 
 export default function TaskItem({
   task,
@@ -18,6 +31,9 @@ export default function TaskItem({
   const [draft, setDraft] = useState(task.text);
 
   const trimmedDraft = useMemo(() => draft.trim(), [draft]);
+
+  const dueLabel = formatDueDateLabel(task.dueDate);
+  const overdue = isDueOverdue(task.dueDate, task.completed);
 
   function startEditing() {
     setDraft(task.text);
@@ -62,18 +78,40 @@ export default function TaskItem({
             />
           ) : (
             <>
-              <p
-                className={`text-wrap truncate text-sm font-medium ${
-                  task.completed
-                    ? "text-zinc-500 line-through dark:text-zinc-400"
-                    : "text-zinc-900 dark:text-zinc-100"
-                }`}
-              >
-                {task.text}
-              </p>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                {new Date(task.createdAt).toLocaleString()}
-              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${priorityBadgeClass[task.priority]}`}
+                >
+                  {task.priority}
+                </span>
+                <p
+                  className={`min-w-0 flex-1 text-wrap truncate text-sm font-medium ${
+                    task.completed
+                      ? "text-zinc-500 line-through dark:text-zinc-400"
+                      : overdue
+                        ? "text-red-600 dark:text-red-400"
+                        : "text-zinc-900 dark:text-zinc-100"
+                  }`}
+                >
+                  {task.text}
+                </p>
+              </div>
+              <div className="mt-1 flex flex-col gap-0.5 text-xs">
+                {dueLabel ? (
+                  <p
+                    className={
+                      overdue
+                        ? "font-medium text-red-600 dark:text-red-400"
+                        : "text-zinc-600 dark:text-zinc-400"
+                    }
+                  >
+                    Due: {dueLabel}
+                  </p>
+                ) : null}
+                <p className="text-zinc-500 dark:text-zinc-400">
+                  {new Date(task.createdAt).toLocaleString()}
+                </p>
+              </div>
             </>
           )}
         </div>
