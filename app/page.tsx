@@ -12,12 +12,22 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<TaskFilter>("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredTasks = useMemo(() => {
-    if (activeFilter === "Active") return tasks.filter((t) => !t.completed);
-    if (activeFilter === "Completed") return tasks.filter((t) => t.completed);
-    return tasks;
-  }, [tasks, activeFilter]);
+    let list =
+      activeFilter === "Active"
+        ? tasks.filter((t) => !t.completed)
+        : activeFilter === "Completed"
+          ? tasks.filter((t) => t.completed)
+          : tasks;
+
+    const q = searchQuery.trim().toLowerCase();
+    if (q) {
+      list = list.filter((t) => t.text.toLowerCase().includes(q));
+    }
+    return list;
+  }, [tasks, activeFilter, searchQuery]);
 
   async function loadTasks() {
     setError(null);
@@ -134,6 +144,30 @@ export default function Home() {
           </p>
         ) : (
           <div className="space-y-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <label htmlFor="task-search" className="sr-only">
+                Search tasks
+              </label>
+              <input
+                id="task-search"
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search tasks..."
+                autoComplete="off"
+                className="min-w-[12rem] flex-1 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-500 dark:focus:border-zinc-500 dark:focus:ring-zinc-700"
+              />
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                disabled={searchQuery.length === 0}
+                aria-label="Clear search"
+                className="shrink-0 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-600 transition-colors enabled:hover:bg-zinc-100 enabled:hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 enabled:dark:hover:bg-zinc-900"
+              >
+                Clear
+              </button>
+            </div>
+
             <div
               className="flex flex-wrap gap-2"
               role="group"
@@ -166,7 +200,9 @@ export default function Home() {
 
             {filteredTasks.length === 0 ? (
               <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                No tasks match this filter.
+                {searchQuery.trim()
+                  ? "No tasks match your search."
+                  : "No tasks match this filter."}
               </p>
             ) : (
               <TaskList
