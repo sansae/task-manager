@@ -1,16 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Task } from "@/lib/task";
 import TaskForm from "@/components/TaskForm";
 import TaskList from "@/components/TaskList";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 type TaskFilter = "All" | "Active" | "Completed";
+const TASKS_STORAGE_KEY = "task-manager.tasks";
 
 export default function Home() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [tasks, setTasks, hasLoaded] = useLocalStorage<Task[]>(
+    TASKS_STORAGE_KEY,
+    [],
+  );
   const [activeFilter, setActiveFilter] = useState<TaskFilter>("All");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -29,86 +32,20 @@ export default function Home() {
     return list;
   }, [tasks, activeFilter, searchQuery]);
 
-  async function loadTasks() {
-    setError(null);
-    try {
-      const res = await fetch("/api/tasks", { method: "GET" });
-      if (!res.ok) throw new Error(`Failed to load tasks (${res.status}).`);
-      const data = (await res.json()) as { tasks: Task[] };
-      setTasks(Array.isArray(data.tasks) ? data.tasks : []);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
+  function deleteTask(id: string) {
+    setTasks((prev) => prev.filter((t) => t.id !== id));
   }
 
-  useEffect(() => {
-    loadTasks();
-  }, []);
-
-  async function deleteTask(id: string) {
-    setError(null);
-    try {
-      const res = await fetch(`/api/tasks?id=${encodeURIComponent(id)}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        const data = (await res.json().catch(() => null)) as
-          | { error?: string }
-          | null;
-        throw new Error(data?.error ?? `Delete failed (${res.status}).`);
-      }
-      setTasks((prev) => prev.filter((t) => t.id !== id));
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      setError(message);
-    }
+  function editTask(id: string, newText: string) {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, text: newText } : t)),
+    );
   }
 
-  async function editTask(id: string, newText: string) {
-    setError(null);
-    try {
-      const res = await fetch(`/api/tasks?id=${encodeURIComponent(id)}`, {
-        method: "PATCH",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ text: newText }),
-      });
-      if (!res.ok) {
-        const data = (await res.json().catch(() => null)) as
-          | { error?: string }
-          | null;
-        throw new Error(data?.error ?? `Edit failed (${res.status}).`);
-      }
-      const data = (await res.json()) as { task: Task };
-      setTasks((prev) => prev.map((t) => (t.id === id ? data.task : t)));
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      setError(message);
-    }
-  }
-
-  async function toggleComplete(id: string, completed: boolean) {
-    setError(null);
-    try {
-      const res = await fetch(`/api/tasks?id=${encodeURIComponent(id)}`, {
-        method: "PATCH",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ completed }),
-      });
-      if (!res.ok) {
-        const data = (await res.json().catch(() => null)) as
-          | { error?: string }
-          | null;
-        throw new Error(data?.error ?? `Update failed (${res.status}).`);
-      }
-      const data = (await res.json()) as { task: Task };
-      setTasks((prev) => prev.map((t) => (t.id === id ? data.task : t)));
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      setError(message);
-    }
+  function toggleComplete(id: string, completed: boolean) {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, completed } : t)),
+    );
   }
 
   return (
@@ -130,11 +67,7 @@ export default function Home() {
           }}
         />
 
-        {error ? (
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-        ) : null}
-
-        {loading ? (
+        {!hasLoaded ? (
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Loading tasks...
           </p>

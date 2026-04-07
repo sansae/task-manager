@@ -23,28 +23,19 @@ export default function TaskForm({
 
     setLoading(true);
     try {
-      const res = await fetch("/api/tasks", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          text: trimmed,
-          priority,
-          ...(dueDate.trim() ? { dueDate: dueDate.trim() } : {}),
-        }),
-      });
+      const task: Task = {
+        id: crypto.randomUUID(),
+        text: trimmed,
+        createdAt: new Date().toISOString(),
+        completed: false,
+        priority,
+        dueDate: dueDate.trim() || null,
+      };
 
-      if (!res.ok) {
-        const data = (await res.json().catch(() => null)) as
-          | { error?: string }
-          | null;
-        throw new Error(data?.error ?? `Request failed (${res.status}).`);
-      }
-
-      const data = (await res.json()) as { task: Task };
       setText("");
       setDueDate("");
       setPriority("Medium");
-      onTaskCreated?.(data.task);
+      onTaskCreated?.(task);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       setError(message);
