@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { Task } from "@/lib/task";
 import TaskForm from "@/components/TaskForm";
 import TaskList from "@/components/TaskList";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 type TaskFilter = "All" | "Active" | "Completed";
@@ -49,15 +50,18 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-zinc-50 px-4 py-6 font-sans dark:bg-black sm:px-6">
+    <div className="flex min-h-screen flex-col items-center bg-zinc-100/90 px-4 py-6 font-sans text-zinc-950 transition-colors dark:bg-zinc-950 dark:text-zinc-50 sm:px-6">
       <div className="w-full max-w-3xl space-y-6">
-        <header className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-3xl">
-            Task Manager
-          </h1>
-          <p className="text-zinc-600 dark:text-zinc-400">
-            Add tasks and keep track of what needs doing.
-          </p>
+        <header className="flex flex-col gap-4 rounded-3xl border border-zinc-200/80 bg-white/85 p-5 shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/80 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-3xl">
+              Task Manager
+            </h1>
+            <p className="text-zinc-600 dark:text-zinc-400">
+              Add tasks and keep track of what needs doing.
+            </p>
+          </div>
+          <ThemeToggle />
         </header>
 
         <TaskForm
@@ -88,14 +92,14 @@ export default function Home() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search tasks..."
                 autoComplete="off"
-                className="min-w-[12rem] flex-1 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-500 dark:focus:border-zinc-500 dark:focus:ring-zinc-700"
+                className="min-w-[12rem] flex-1 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:placeholder:text-zinc-500 dark:focus:border-zinc-500 dark:focus:ring-zinc-700"
               />
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
                 disabled={searchQuery.length === 0}
                 aria-label="Clear search"
-                className="shrink-0 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-600 transition-colors enabled:hover:bg-zinc-100 enabled:hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 enabled:dark:hover:bg-zinc-900"
+                className="shrink-0 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-600 shadow-sm transition-colors enabled:hover:cursor-pointer enabled:hover:border-zinc-300 enabled:hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 enabled:dark:hover:border-zinc-600 enabled:dark:hover:bg-zinc-800"
               >
                 Clear
               </button>
@@ -122,7 +126,7 @@ export default function Home() {
                     className={
                       isSelected
                         ? "rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm dark:bg-zinc-100 dark:text-zinc-900"
-                        : "rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-600 transition-colors dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-900 hover:bg-blue-600 hover:text-white hover:cursor-pointer"
+                        : "rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-600 shadow-sm transition-colors hover:cursor-pointer hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
                     }
                   >
                     {label}
