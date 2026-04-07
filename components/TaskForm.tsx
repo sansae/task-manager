@@ -65,7 +65,8 @@ export default function TaskForm({
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
           disabled={loading}
-          className="h-10 w-full max-w-xs rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 outline-none transition-colors focus:border-zinc-400 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800 sm:w-auto"
+          // className="h-10 w-full max-w-xs rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 outline-none transition-colors focus:border-zinc-400 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800 sm:w-auto"
+          className="h-10 w-full max-w-xs rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 transition-colors dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800 sm:w-auto"
         />
       </label>
 
@@ -77,7 +78,8 @@ export default function TaskForm({
           value={priority}
           onChange={(e) => setPriority(e.target.value as TaskPriority)}
           disabled={loading}
-          className="h-10 w-full max-w-xs rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 outline-none transition-colors focus:border-zinc-400 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800 sm:w-auto"
+          // className="h-10 w-full max-w-xs rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 outline-none transition-colors focus:border-zinc-400 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800 sm:w-auto"
+          className="h-10 w-full max-w-xs rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 transition-colors dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800 sm:w-auto"
         >
           <option value="High">High</option>
           <option value="Medium">Medium</option>
@@ -90,7 +92,8 @@ export default function TaskForm({
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="e.g., Write README"
-          className="h-10 flex-1 rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 outline-none transition-colors focus:border-zinc-400 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
+          // className="h-10 flex-1 rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 outline-none transition-colors focus:border-zinc-400 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
+          className="h-10 flex-1 rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
           disabled={loading}
         />
         <button

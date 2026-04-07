@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@layer base {
+  *:focus {
+    outline: 2px solid black;
+    outline-offset: 2px;
+  }
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
