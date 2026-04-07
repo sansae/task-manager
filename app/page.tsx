@@ -5,6 +5,8 @@ import type { Task } from "@/lib/task";
 import TaskForm from "@/components/TaskForm";
 import TaskList from "@/components/TaskList";
 import ThemeToggle from "@/components/ThemeToggle";
+import ToastViewport from "@/components/ToastViewport";
+import type { ToastMessage } from "@/components/Toast";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 type TaskFilter = "All" | "Active" | "Completed";
@@ -17,6 +19,7 @@ export default function Home() {
   );
   const [activeFilter, setActiveFilter] = useState<TaskFilter>("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const filteredTasks = useMemo(() => {
     let list =
@@ -33,14 +36,32 @@ export default function Home() {
     return list;
   }, [tasks, activeFilter, searchQuery]);
 
+  function showToast(message: string, tone: ToastMessage["tone"]) {
+    setToasts((prev) => [...prev, { id: Date.now() + Math.random(), message, tone }]);
+  }
+
+  function dismissToast(id: number) {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+  }
+
   function deleteTask(id: string) {
-    setTasks((prev) => prev.filter((t) => t.id !== id));
+    try {
+      setTasks((prev) => prev.filter((t) => t.id !== id));
+      showToast("Task has been deleted!", "success");
+    } catch {
+      showToast("Task has been deleted!", "error");
+    }
   }
 
   function editTask(id: string, newText: string) {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, text: newText } : t)),
-    );
+    try {
+      setTasks((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, text: newText } : t)),
+      );
+      showToast("Task has been edited!", "success");
+    } catch {
+      showToast("Task has been edited!", "error");
+    }
   }
 
   function toggleComplete(id: string, completed: boolean) {
@@ -51,6 +72,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-zinc-100/90 px-4 py-6 font-sans text-zinc-950 transition-colors dark:bg-zinc-950 dark:text-zinc-50 sm:px-6">
+      <ToastViewport toasts={toasts} onDismiss={dismissToast} />
       <div className="w-full max-w-3xl space-y-6">
         <header className="flex flex-col gap-4 rounded-3xl border border-zinc-200/80 bg-white/85 p-5 shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/80 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-2">
@@ -66,9 +88,15 @@ export default function Home() {
 
         <TaskForm
           onTaskCreated={(task) => {
-            // Optimistic UI: add the new item to the top.
-            setTasks((prev) => [task, ...prev]);
+            try {
+              // Optimistic UI: add the new item to the top.
+              setTasks((prev) => [task, ...prev]);
+              showToast("Task has been added!", "success");
+            } catch {
+              showToast("Task has been added!", "error");
+            }
           }}
+          onTaskCreateError={() => showToast("Task has been added!", "error")}
         />
 
         {!hasLoaded ? (

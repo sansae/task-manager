@@ -5,8 +5,10 @@ import type { Task, TaskPriority } from "@/lib/task";
 
 export default function TaskForm({
   onTaskCreated,
+  onTaskCreateError,
 }: {
   onTaskCreated?: (task: Task) => void;
+  onTaskCreateError?: (message: string) => void;
 }) {
   const [text, setText] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -39,6 +41,7 @@ export default function TaskForm({
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       setError(message);
+      onTaskCreateError?.(message);
     } finally {
       setLoading(false);
     }
