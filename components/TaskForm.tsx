@@ -5,8 +5,10 @@ import type { Task, TaskPriority } from "@/lib/task";
 
 export default function TaskForm({
   onTaskCreated,
+  onTaskCreateError,
 }: {
   onTaskCreated?: (task: Task) => void;
+  onTaskCreateError?: (message: string) => void;
 }) {
   const [text, setText] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -23,31 +25,23 @@ export default function TaskForm({
 
     setLoading(true);
     try {
-      const res = await fetch("/api/tasks", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          text: trimmed,
-          priority,
-          ...(dueDate.trim() ? { dueDate: dueDate.trim() } : {}),
-        }),
-      });
+      const task: Task = {
+        id: crypto.randomUUID(),
+        text: trimmed,
+        createdAt: new Date().toISOString(),
+        completed: false,
+        priority,
+        dueDate: dueDate.trim() || null,
+      };
 
-      if (!res.ok) {
-        const data = (await res.json().catch(() => null)) as
-          | { error?: string }
-          | null;
-        throw new Error(data?.error ?? `Request failed (${res.status}).`);
-      }
-
-      const data = (await res.json()) as { task: Task };
       setText("");
       setDueDate("");
       setPriority("Medium");
-      onTaskCreated?.(data.task);
+      onTaskCreated?.(task);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       setError(message);
+      onTaskCreateError?.(message);
     } finally {
       setLoading(false);
     }
@@ -56,7 +50,7 @@ export default function TaskForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="flex w-full flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-black"
+      className="flex w-full flex-col gap-3 rounded-3xl border border-zinc-200/80 bg-white/90 p-5 shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/85"
     >
       <label className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
         Add task
@@ -71,7 +65,8 @@ export default function TaskForm({
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
           disabled={loading}
-          className="h-10 w-full max-w-xs rounded-lg border border-zinc-200 bg-white px-3 text-zinc-900 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-black dark:text-zinc-100 sm:w-auto"
+          // className="h-10 w-full max-w-xs rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 outline-none transition-colors focus:border-zinc-400 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800 sm:w-auto"
+          className="h-10 w-full max-w-xs rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 transition-colors dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800 sm:w-auto"
         />
       </label>
 
@@ -83,7 +78,8 @@ export default function TaskForm({
           value={priority}
           onChange={(e) => setPriority(e.target.value as TaskPriority)}
           disabled={loading}
-          className="h-10 w-full max-w-xs rounded-lg border border-zinc-200 bg-white px-3 text-zinc-900 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-black dark:text-zinc-100 sm:w-auto"
+          // className="h-10 w-full max-w-xs rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 outline-none transition-colors focus:border-zinc-400 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800 sm:w-auto"
+          className="h-10 w-full max-w-xs rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 transition-colors dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800 sm:w-auto"
         >
           <option value="High">High</option>
           <option value="Medium">Medium</option>
@@ -96,13 +92,14 @@ export default function TaskForm({
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="e.g., Write README"
-          className="h-10 flex-1 rounded-lg border border-zinc-200 bg-white px-3 text-zinc-900 outline-none focus:border-zinc-400 dark:border-zinc-800 dark:bg-black dark:text-zinc-100"
+          // className="h-10 flex-1 rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 outline-none transition-colors focus:border-zinc-400 focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
+          className="h-10 flex-1 rounded-xl border border-zinc-200 bg-white px-3 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
           disabled={loading}
         />
         <button
           type="submit"
           disabled={loading || !text.trim()}
-          className="h-10 w-full rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white transition-opacity disabled:opacity-50 dark:bg-zinc-100 dark:text-black hover:bg-blue-600 hover:text-white hover:cursor-pointer sm:w-auto"
+          className="h-10 w-full rounded-xl bg-zinc-900 px-4 text-sm font-medium text-white shadow-sm transition-colors disabled:opacity-50 hover:cursor-pointer hover:bg-zinc-700 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-300 sm:w-auto"
         >
           {loading ? "Adding..." : "Add"}
         </button>
