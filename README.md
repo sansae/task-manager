@@ -21,6 +21,7 @@ A minimal task manager built with the Next.js App Router. Create tasks with **pr
 - **TypeScript**
 - **Tailwind CSS v4**
 - **ESLint**
+- **Jest**
 
 ## Installation
 
