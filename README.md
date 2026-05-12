@@ -1,37 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Task Manager (Next.js)
 
-## Getting Started
+A minimal task manager built with the Next.js App Router. Create tasks with **priority** and an optional **due date**, then **search**, **filter**, **edit**, **complete**, or **delete** them.
 
-First, run the development server:
+> Note: this project uses an **in-memory API** for storage (`app/api/tasks/route.ts`), so tasks reset when the dev server restarts.
+
+## Features
+
+- **Create tasks**: add a task with priority (High/Medium/Low) and optional due date
+- **Inline edit**: edit task text directly from the list
+- **Complete / incomplete**: checkbox toggle
+- **Delete with confirmation**: prevents accidental removal
+- **Search + filtering**: search by text and filter by All / Active / Completed
+- **Due date helpers**: human-friendly labels (Today/Tomorrow/In X days) + overdue styling
+- **Dark mode styling**: optimized for light/dark themes
+
+## Technologies used
+
+- **Next.js 16** (App Router)
+- **React 19**
+- **TypeScript**
+- **Tailwind CSS v4**
+- **ESLint**
+
+## Installation
+
+```bash
+cd nextjs/task-manager
+npm install
+```
+
+## Run the app
+
+### Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Production build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## How to use
 
-To learn more about Next.js, take a look at the following resources:
+- **Add a task**: choose a priority, optionally pick a due date, type the task, then click **Add**
+- **Mark complete**: use the checkbox
+- **Edit**: click **Edit** (or click the task text) → update → **Save**
+- **Delete**: click **Delete** and confirm
+- **Search**: use the search box (and **Clear** to reset)
+- **Filter**: switch between **All / Active / Completed**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Screenshots
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# task-manager
+![Task list](public/screenshots/task-list.png)
+![Add task form](public/screenshots/add-task.png)
+![Search and filters](public/screenshots/search-filter.png)
