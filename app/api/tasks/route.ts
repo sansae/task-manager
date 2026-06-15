@@ -1,3 +1,4 @@
+import pool from "@/lib/db";
 import type { Task, TaskPriority } from "@/lib/task";
 import { NextResponse } from "next/server";
 
@@ -43,29 +44,52 @@ export async function POST(req: Request) {
     dueDate?: unknown;
   } | null;
   const text = typeof body?.text === "string" ? body.text.trim() : "";
-
+  
   if (!text) {
     return NextResponse.json(
       { error: "Missing or empty `text`." },
       { status: 400 }
     );
   }
-
+  
   const priority = parsePriority(body?.priority);
   const dueDate = parseOptionalDueDate(body?.dueDate);
+  
+  // const task: Task = {
+    //   id: createId(),
+    //   text,
+    //   createdAt: new Date().toISOString(),
+    //   completed: false,
+    //   priority,
+    //   ...(dueDate !== undefined ? { dueDate } : {}),
+    // };
+    
+  try {
+    const result = await pool.query(
+      `
+      INSERT INTO tasks (text, priority, due_date)
+      VALUES ($1, $2, $3)
+      RETURNING *
+      `,
+      [text, priority, dueDate]
+    );
+    
+    return NextResponse.json(
+      { task: result.rows[0] },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.log(error);
+    
+    return NextResponse.json(
+      { error: "Database error" },
+      { status: 500 }
+    );
+  }
 
-  const task: Task = {
-    id: createId(),
-    text,
-    createdAt: new Date().toISOString(),
-    completed: false,
-    priority,
-    ...(dueDate !== undefined ? { dueDate } : {}),
-  };
-
-  tasks.unshift(task);
-  return NextResponse.json({ task }, { status: 201 });
-}
+  // tasks.unshift(task);
+  // return NextResponse.json({ task }, { status: 201 });
+} // end POST route for tasks (i.e. adding tasks to psql db)
 
 export async function DELETE(req: Request) {
   const url = new URL(req.url);

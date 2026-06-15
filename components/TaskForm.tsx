@@ -45,6 +45,25 @@ export default function TaskForm({
     } finally {
       setLoading(false);
     }
+  } // onSubmit()
+
+  async function addTask() {
+    // get task data (text, dueDate, and priority) to pass it to the body of my fetch
+    const response = await fetch("/api/tasks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        text: text,
+        priority: priority,
+        dueDate: dueDate
+      }),
+    });
+
+    const newTask = await response.json();
+
+    console.log("newTask is: ", newTask);
   }
 
   return (
@@ -97,6 +116,7 @@ export default function TaskForm({
           disabled={loading}
         />
         <button
+          onClick={() => addTask()}
           type="submit"
           disabled={loading || !text.trim()}
           className="h-10 w-full rounded-xl bg-zinc-900 px-4 text-sm font-medium text-white shadow-sm transition-colors disabled:opacity-50 hover:cursor-pointer hover:bg-zinc-700 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-300 sm:w-auto"
