@@ -28,7 +28,7 @@ export default function TaskForm({
       const task: Task = {
         id: crypto.randomUUID(),
         text: trimmed,
-        createdAt: new Date().toISOString(),
+        created_at: new Date().toISOString(),
         completed: false,
         priority,
         dueDate: dueDate.trim() || null,

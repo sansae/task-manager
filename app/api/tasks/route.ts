@@ -30,9 +30,14 @@ export async function GET() {
       "SELECT * FROM tasks ORDER BY created_at DESC"
     );
 
-    console.log("result from GET request to database is: ", result);
+    // because of how we created the created_at column
+    // we need to format it here or else we'll get "Invalid Date"
+    const formattedRows = result.rows.map((row) => ({
+      ...row,
+      created_at: row.created_at?.toISOString()
+    }));
 
-    return NextResponse.json(result.rows);
+    return NextResponse.json(formattedRows);
   } catch (err) {
     console.error(err);
   }

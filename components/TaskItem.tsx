@@ -110,7 +110,8 @@ export default function TaskItem({
                   </p>
                 ) : null}
                 <p className="text-zinc-500 dark:text-zinc-400">
-                  {new Date(task.createdAt).toLocaleString()}
+                  {new Date(task.created_at).toLocaleString()}
+
                 </p>
               </div>
             </>
