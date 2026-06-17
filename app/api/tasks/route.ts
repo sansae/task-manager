@@ -15,17 +15,28 @@ function parsePriority(value: unknown): TaskPriority {
 // Note: resets when the server restarts.
 const tasks: Task[] = [];
 
-function createId() {
-  // `crypto.randomUUID` exists in modern runtimes, but keep a fallback.
-  const c = globalThis.crypto;
-  if (c && "randomUUID" in c) {
-    return c.randomUUID();
-  }
-  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-}
+// function createId() {
+//   // `crypto.randomUUID` exists in modern runtimes, but keep a fallback.
+//   const c = globalThis.crypto;
+//   if (c && "randomUUID" in c) {
+//     return c.randomUUID();
+//   }
+//   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+// }
 
 export async function GET() {
-  return NextResponse.json({ tasks });
+  try {
+    const result = await pool.query(
+      "SELECT * FROM tasks ORDER BY created_at DESC"
+    );
+
+    console.log("result from GET request to database is: ", result);
+
+    return NextResponse.json(result.rows);
+  } catch (err) {
+    console.error(err);
+  }
+  // return NextResponse.json({ tasks });
 }
 
 function parseOptionalDueDate(value: unknown): string | undefined {

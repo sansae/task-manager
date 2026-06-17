@@ -1,25 +1,49 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type { Task } from "@/lib/task";
 import TaskForm from "@/components/TaskForm";
 import TaskList from "@/components/TaskList";
 import ThemeToggle from "@/components/ThemeToggle";
 import ToastViewport from "@/components/ToastViewport";
 import type { ToastMessage } from "@/components/Toast";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+// import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 type TaskFilter = "All" | "Active" | "Completed";
-const TASKS_STORAGE_KEY = "task-manager.tasks";
+// const TASKS_STORAGE_KEY = "task-manager.tasks";
 
 export default function Home() {
-  const [tasks, setTasks, hasLoaded] = useLocalStorage<Task[]>(
-    TASKS_STORAGE_KEY,
-    [],
-  );
+  // const [tasks, setTasks, hasLoaded] = useLocalStorage<Task[]>(
+  //   TASKS_STORAGE_KEY,
+  //   [],
+  // );
+
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [activeFilter, setActiveFilter] = useState<TaskFilter>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  useEffect(() => {
+    async function loadTasks() {
+      try {
+        const res = await fetch("/api/tasks");
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch tasks.`)
+        }
+
+        const data = await res.json();
+        setTasks(data);
+      } catch(err) {
+        console.error(err)
+      } finally {
+        setHasLoaded(true);
+      }
+    }
+
+    loadTasks();
+  }, [])
 
   const filteredTasks = useMemo(() => {
     let list =
