@@ -68,12 +68,27 @@ export default function Home() {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }
 
-  function deleteTask(id: string) {
+  async function deleteTask(id: string) {
+    try {
+      const res = await fetch(`/api/tasks?id=${encodeURIComponent(id)}`, {
+        method: "DELETE"
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete task");
+      }
+
+      setTasks((prev) => prev.filter((t) => t.id !== id));
+      showToast("Task has been deleted!", "success");
+    } catch {
+      showToast("Task was not deleted!", "error");
+    }
+
     try {
       setTasks((prev) => prev.filter((t) => t.id !== id));
       showToast("Task has been deleted!", "success");
     } catch {
-      showToast("Task has been deleted!", "error");
+      showToast("Task was not deleted!", "error");
     }
   }
 

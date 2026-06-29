@@ -108,6 +108,17 @@ export async function POST(req: Request) {
 } // end POST route for tasks (i.e. adding tasks to psql db)
 
 export async function DELETE(req: Request) {
+  console.log("req is: ", req);
+
+  // try {
+  //   const result = await pool.query(
+  //     "DELETE FROM tasks WHERE "
+  //   );
+  //   // return NextResponse.json()
+  // } catch (err) {
+  //   console.error(err);
+  // }
+
   const url = new URL(req.url);
   const id = url.searchParams.get("id")?.trim() ?? "";
 
@@ -115,13 +126,28 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: "Missing `id`." }, { status: 400 });
   }
 
-  const idx = tasks.findIndex((t) => t.id === id);
-  if (idx === -1) {
-    return NextResponse.json({ error: "Task not found." }, { status: 404 });
+  try {
+    const result = await pool.query(
+      "DELETE FROM tasks WHERE id = $1 RETURNING *", [id]
+    );
+
+    if (result.rowCount === 0) {
+      return NextResponse.json({ error: "Task Not Found." }, { status: 404 });
+    }
+
+    return NextResponse.json({ task: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Database error." }, { status: 500 });
   }
 
-  const [task] = tasks.splice(idx, 1);
-  return NextResponse.json({ task });
+  // const idx = tasks.findIndex((t) => t.id === id);
+  // if (idx === -1) {
+  //   return NextResponse.json({ error: "Task not found." }, { status: 404 });
+  // }
+
+  // const [task] = tasks.splice(idx, 1);
+  // return NextResponse.json({ task });
 }
 
 export async function PATCH(req: Request) {

@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "db": "docker exec -it my-postgres psql -U postgres -d myappdb"
   },
   "dependencies": {
     "next": "16.2.1",
