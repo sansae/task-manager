@@ -100,6 +100,7 @@ export default function Home() {
     try {
       const res = await fetch(`/api/tasks?id=${encodeURIComponent(id)}`, {
         method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ completed })
       });
 
