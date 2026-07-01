@@ -1,6 +1,6 @@
 import pool from "@/lib/db";
 import type { Task, TaskPriority } from "@/lib/task";
-import { NextResponse } from "next/server";
+import { NextFetchEvent, NextResponse } from "next/server";
 
 const PRIORITIES: TaskPriority[] = ["High", "Medium", "Low"];
 
@@ -110,15 +110,6 @@ export async function POST(req: Request) {
 export async function DELETE(req: Request) {
   console.log("req is: ", req);
 
-  // try {
-  //   const result = await pool.query(
-  //     "DELETE FROM tasks WHERE "
-  //   );
-  //   // return NextResponse.json()
-  // } catch (err) {
-  //   console.error(err);
-  // }
-
   const url = new URL(req.url);
   const id = url.searchParams.get("id")?.trim() ?? "";
 
@@ -138,7 +129,7 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ task: result.rows[0] });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: "Database error." }, { status: 500 });
+    return NextResponse.json({ error: err }, { status: 500 });
   }
 
   // const idx = tasks.findIndex((t) => t.id === id);
@@ -166,30 +157,123 @@ export async function PATCH(req: Request) {
   const text = hasText ? textInput.trim() : "";
   const hasCompleted = typeof completedInput === "boolean";
 
-  const idx = tasks.findIndex((t) => t.id === id);
-  if (idx === -1) {
-    return NextResponse.json({ error: "Task not found." }, { status: 404 });
+  try {
+    const fields = [];
+    const values = [];
+    let param = 1;
+
+    if (hasText) {
+      fields.push(`text = $${param++}`);
+      values.push(text);
+    }
+
+    if (hasCompleted) {
+      fields.push(`completed = $${param++}`);
+      values.push(completedInput);
+    }
+
+    values.push(id);
+
+    const result = await pool.query(
+      `
+      UPDATE tasks
+      SET ${fields.join(", ")}
+      WHERE id = $${param}
+      RETURNING *;
+      `,
+      values
+    )
+
+    if (result.rowCount === 0) {
+      return NextResponse.json({ error: "Task not found." }, { status: 404 })
+    }
+
+    return NextResponse.json({ task: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: err }, { status: 500 });
   }
 
-  if (!hasText && !hasCompleted) {
-    return NextResponse.json(
-      { error: "Provide `text` or `completed`." },
-      { status: 400 }
-    );
-  }
+  // try {
+  //   if (hasCompleted && hasText) {
+  //     const result = await pool.query(
+  //       `
+  //       UPDATE tasks
+  //       SET text = $1, completed = $2
+  //       WHERE id = $3
+  //       RETURNING *;
+  //       `,
+  //       [textInput, completedInput, id]
+  //     )
 
-  if (hasText && !text) {
-    return NextResponse.json(
-      { error: "Missing or empty `text`." },
-      { status: 400 }
-    );
-  }
+  //     if (result.rowCount === 0) {
+  //       return NextResponse.json({ error: "Task Not Found." }, { status: 404 });
+  //     }
 
-  const updates: Partial<Task> = {};
-  if (hasText) updates.text = text;
-  if (hasCompleted) updates.completed = completedInput;
+  //     return NextResponse.json({ task: result.rows[0] });
+  //   } else if (hasCompleted) {
+  //     const result = await pool.query(
+  //       `
+  //       UPDATE tasks
+  //       SET completed = $1
+  //       WHERE id = $2
+  //       RETURNING *;
+  //       `,
+  //       [completedInput, id]
+  //     )
 
-  tasks[idx] = { ...tasks[idx], ...updates };
-  return NextResponse.json({ task: tasks[idx] });
+  //     if (result.rowCount === 0) {
+  //       return NextResponse.json({ error: "Task not found." }, { status: 404 });
+  //     }
+
+  //     return NextResponse.json({ task: result.rows[0] });
+  //   } else if (hasText) {
+  //     const result = await pool.query(
+  //       `
+  //       UPDATE tasks
+  //       SET text = $1
+  //       WHERE id = $2
+  //       RETURNING *;
+  //       `,
+  //       [textInput, id]
+  //     )
+
+  //     if (result.rowCount === 0) {
+  //       return NextResponse.json({ error: "Task not found." }, { status: 404 });
+  //     }
+
+  //     return NextResponse.json({ task: result.rows[0] });
+  //   }
+
+  // } catch (err) {
+  //   console.error(err);
+  //   return NextResponse.json({ error: err }, { status: 500 });
+  // }
+
+  // const idx = tasks.findIndex((t) => t.id === id);
+  // if (idx === -1) {
+  //   return NextResponse.json({ error: "Task not found." }, { status: 404 });
+  // }
+
+  // if (!hasText && !hasCompleted) {
+  //   return NextResponse.json(
+  //     { error: "Provide `text` or `completed`." },
+  //     { status: 400 }
+  //   );
+  // }
+
+  // if (hasText && !text) {
+  //   return NextResponse.json(
+  //     { error: "Missing or empty `text`." },
+  //     { status: 400 }
+  //   );
+  // }
+
+  // const updates: Partial<Task> = {};
+  // if (hasText) updates.text = text;
+  // if (hasCompleted) updates.completed = completedInput;
+
+  // tasks[idx] = { ...tasks[idx], ...updates };
+  // return NextResponse.json({ task: tasks[idx] });
 }
 

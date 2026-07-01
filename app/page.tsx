@@ -83,13 +83,6 @@ export default function Home() {
     } catch {
       showToast("Task was not deleted!", "error");
     }
-
-    try {
-      setTasks((prev) => prev.filter((t) => t.id !== id));
-      showToast("Task has been deleted!", "success");
-    } catch {
-      showToast("Task was not deleted!", "error");
-    }
   }
 
   function editTask(id: string, newText: string) {
@@ -103,10 +96,23 @@ export default function Home() {
     }
   }
 
-  function toggleComplete(id: string, completed: boolean) {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed } : t)),
-    );
+  async function toggleComplete(id: string, completed: boolean) {
+    try {
+      const res = await fetch(`/api/tasks?id=${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        body: JSON.stringify({ completed })
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to toggle complete.");
+      }
+      
+      setTasks((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, completed } : t)),
+      );
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   return (
