@@ -1,6 +1,6 @@
 import pool from "@/lib/db";
-import type { Task, TaskPriority } from "@/lib/task";
-import { NextFetchEvent, NextResponse } from "next/server";
+import type { TaskPriority } from "@/lib/task";
+import { NextResponse } from "next/server";
 
 const PRIORITIES: TaskPriority[] = ["High", "Medium", "Low"];
 
@@ -10,19 +10,6 @@ function parsePriority(value: unknown): TaskPriority {
   }
   return "Medium";
 }
-
-// In-memory storage for development/demo purposes.
-// Note: resets when the server restarts.
-const tasks: Task[] = [];
-
-// function createId() {
-//   // `crypto.randomUUID` exists in modern runtimes, but keep a fallback.
-//   const c = globalThis.crypto;
-//   if (c && "randomUUID" in c) {
-//     return c.randomUUID();
-//   }
-//   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-// }
 
 export async function GET() {
   try {
@@ -41,7 +28,6 @@ export async function GET() {
   } catch (err) {
     console.error(err);
   }
-  // return NextResponse.json({ tasks });
 }
 
 function parseOptionalDueDate(value: unknown): string | undefined {
@@ -70,15 +56,6 @@ export async function POST(req: Request) {
   
   const priority = parsePriority(body?.priority);
   const dueDate = parseOptionalDueDate(body?.dueDate);
-  
-  // const task: Task = {
-    //   id: createId(),
-    //   text,
-    //   createdAt: new Date().toISOString(),
-    //   completed: false,
-    //   priority,
-    //   ...(dueDate !== undefined ? { dueDate } : {}),
-    // };
     
   try {
     const result = await pool.query(
@@ -102,9 +79,6 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-
-  // tasks.unshift(task);
-  // return NextResponse.json({ task }, { status: 201 });
 } // end POST route for tasks (i.e. adding tasks to psql db)
 
 export async function DELETE(req: Request) {
@@ -129,14 +103,6 @@ export async function DELETE(req: Request) {
     console.error(err);
     return NextResponse.json({ error: err }, { status: 500 });
   }
-
-  // const idx = tasks.findIndex((t) => t.id === id);
-  // if (idx === -1) {
-  //   return NextResponse.json({ error: "Task not found." }, { status: 404 });
-  // }
-
-  // const [task] = tasks.splice(idx, 1);
-  // return NextResponse.json({ task });
 }
 
 export async function PATCH(req: Request) {
@@ -198,87 +164,5 @@ export async function PATCH(req: Request) {
     console.error(err);
     return NextResponse.json({ error: err }, { status: 500 });
   }
-
-  // try {
-  //   if (hasCompleted && hasText) {
-  //     const result = await pool.query(
-  //       `
-  //       UPDATE tasks
-  //       SET text = $1, completed = $2
-  //       WHERE id = $3
-  //       RETURNING *;
-  //       `,
-  //       [textInput, completedInput, id]
-  //     )
-
-  //     if (result.rowCount === 0) {
-  //       return NextResponse.json({ error: "Task Not Found." }, { status: 404 });
-  //     }
-
-  //     return NextResponse.json({ task: result.rows[0] });
-  //   } else if (hasCompleted) {
-  //     const result = await pool.query(
-  //       `
-  //       UPDATE tasks
-  //       SET completed = $1
-  //       WHERE id = $2
-  //       RETURNING *;
-  //       `,
-  //       [completedInput, id]
-  //     )
-
-  //     if (result.rowCount === 0) {
-  //       return NextResponse.json({ error: "Task not found." }, { status: 404 });
-  //     }
-
-  //     return NextResponse.json({ task: result.rows[0] });
-  //   } else if (hasText) {
-  //     const result = await pool.query(
-  //       `
-  //       UPDATE tasks
-  //       SET text = $1
-  //       WHERE id = $2
-  //       RETURNING *;
-  //       `,
-  //       [textInput, id]
-  //     )
-
-  //     if (result.rowCount === 0) {
-  //       return NextResponse.json({ error: "Task not found." }, { status: 404 });
-  //     }
-
-  //     return NextResponse.json({ task: result.rows[0] });
-  //   }
-
-  // } catch (err) {
-  //   console.error(err);
-  //   return NextResponse.json({ error: err }, { status: 500 });
-  // }
-
-  // const idx = tasks.findIndex((t) => t.id === id);
-  // if (idx === -1) {
-  //   return NextResponse.json({ error: "Task not found." }, { status: 404 });
-  // }
-
-  // if (!hasText && !hasCompleted) {
-  //   return NextResponse.json(
-  //     { error: "Provide `text` or `completed`." },
-  //     { status: 400 }
-  //   );
-  // }
-
-  // if (hasText && !text) {
-  //   return NextResponse.json(
-  //     { error: "Missing or empty `text`." },
-  //     { status: 400 }
-  //   );
-  // }
-
-  // const updates: Partial<Task> = {};
-  // if (hasText) updates.text = text;
-  // if (hasCompleted) updates.completed = completedInput;
-
-  // tasks[idx] = { ...tasks[idx], ...updates };
-  // return NextResponse.json({ task: tasks[idx] });
 }
 

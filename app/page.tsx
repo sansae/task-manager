@@ -7,16 +7,10 @@ import TaskList from "@/components/TaskList";
 import ThemeToggle from "@/components/ThemeToggle";
 import ToastViewport from "@/components/ToastViewport";
 import type { ToastMessage } from "@/components/Toast";
-// import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 type TaskFilter = "All" | "Active" | "Completed";
-// const TASKS_STORAGE_KEY = "task-manager.tasks";
 
 export default function Home() {
-  // const [tasks, setTasks, hasLoaded] = useLocalStorage<Task[]>(
-  //   TASKS_STORAGE_KEY,
-  //   [],
-  // );
 
   const [tasks, setTasks] = useState<Task[]>([])
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -105,16 +99,6 @@ export default function Home() {
       console.error(err);
       showToast("Task was not edited!", "error");
     }
-
-
-    // try {
-    //   setTasks((prev) =>
-    //     prev.map((t) => (t.id === id ? { ...t, text: newText } : t)),
-    //   );
-    //   showToast("Task has been edited!", "success");
-    // } catch {
-    //   showToast("Task has been edited!", "error");
-    // }
   }
 
   async function toggleComplete(id: string, completed: boolean) {
