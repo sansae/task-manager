@@ -85,15 +85,36 @@ export default function Home() {
     }
   }
 
-  function editTask(id: string, newText: string) {
+  async function editTask(id: string, text: string) {
     try {
+      const res = await fetch(`/api/tasks?id=${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to edit task.");
+      }
+      
       setTasks((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, text: newText } : t)),
+        prev.map((t) => (t.id === id ? { ...t, text: text } : t)),
       );
       showToast("Task has been edited!", "success");
-    } catch {
-      showToast("Task has been edited!", "error");
+    } catch (err) {
+      console.error(err);
+      showToast("Task was not edited!", "error");
     }
+
+
+    // try {
+    //   setTasks((prev) =>
+    //     prev.map((t) => (t.id === id ? { ...t, text: newText } : t)),
+    //   );
+    //   showToast("Task has been edited!", "success");
+    // } catch {
+    //   showToast("Task has been edited!", "error");
+    // }
   }
 
   async function toggleComplete(id: string, completed: boolean) {

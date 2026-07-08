@@ -108,8 +108,6 @@ export async function POST(req: Request) {
 } // end POST route for tasks (i.e. adding tasks to psql db)
 
 export async function DELETE(req: Request) {
-  console.log("req is: ", req);
-
   const url = new URL(req.url);
   const id = url.searchParams.get("id")?.trim() ?? "";
 
@@ -170,6 +168,13 @@ export async function PATCH(req: Request) {
     if (hasCompleted) {
       fields.push(`completed = $${param++}`);
       values.push(completedInput);
+    }
+
+    if (!hasText && !hasCompleted) {
+      return NextResponse.json(
+        { error: "Provide text or completed"},
+        { status: 400 }
+      )
     }
 
     values.push(id);
