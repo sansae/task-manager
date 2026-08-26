@@ -23,6 +23,11 @@ A minimal task manager built with the Next.js App Router. Create tasks with **pr
 - **ESLint**
 - **Jest**
 
+## Infrastructure / Deployment
+
+- **Netlify** (hosting)
+- **Neon** (Managed PostgreSQL Database)
+
 ## Installation
 
 ```bash
