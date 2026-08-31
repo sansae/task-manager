@@ -184,34 +184,40 @@ export default function Home() {
               </button>
             </div>
 
-            <div
-              className="flex flex-wrap gap-2"
-              role="group"
-              aria-label="Filter tasks"
-            >
-              {(
-                [
-                  { key: "All" as const, label: "All" },
-                  { key: "Active" as const, label: "Active" },
-                  { key: "Completed" as const, label: "Completed" },
-                ] as const
-              ).map(({ key, label }) => {
-                const isSelected = activeFilter === key;
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setActiveFilter(key)}
-                    className={
-                      isSelected
-                        ? "rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm dark:bg-zinc-100 dark:text-zinc-900"
-                        : "rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-600 shadow-sm transition-colors hover:cursor-pointer hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
-                    }
-                  >
-                    {label}
-                  </button>
-                );
-              })}
+            <div className="filter-tasks-and-pdf-save-row flex justify-between">
+              <div
+                className="flex flex-wrap gap-2"
+                role="group"
+                aria-label="Filter tasks"
+              >
+                {(
+                  [
+                    { key: "All" as const, label: "All" },
+                    { key: "Active" as const, label: "Active" },
+                    { key: "Completed" as const, label: "Completed" },
+                  ] as const
+                ).map(({ key, label }) => {
+                  const isSelected = activeFilter === key;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setActiveFilter(key)}
+                      className={
+                        isSelected
+                          ? "rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm dark:bg-zinc-100 dark:text-zinc-900"
+                          : "rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-600 shadow-sm transition-colors hover:cursor-pointer hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
+                      }
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="save-to-pdf">
+                <button className="h-10 w-full rounded-xl bg-zinc-900 px-4 text-sm font-medium text-white hover:cursor-pointer hover:bg-zinc-700 transition-colors dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-300">Save list to pdf</button>
+              </div>
             </div>
 
             {filteredTasks.length === 0 ? (
