@@ -121,6 +121,36 @@ export default function Home() {
     }
   }
 
+  async function saveToPdf() {
+    const response = await fetch('/api/pdf')
+
+    if (!response.ok) {
+      throw new Error("Failed to generate PDF");
+    }
+
+    // blob = binary large object...
+    // i.e. Here's some data that isn't necessarily text; treat it as a file-like chunk of bytes
+    const blob = await response.blob();
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "tasks.pdf";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(url);
+
+    // console.log("response is: ", response);
+    // console.log("blob is: ", blob);
+    // console.log("url is: ", url);
+    // console.log("link is: ", link);
+    
+  }
+
   return (
     <div className="flex min-h-screen flex-col items-center bg-zinc-100/90 px-4 py-6 font-sans text-zinc-950 transition-colors dark:bg-zinc-950 dark:text-zinc-50 sm:px-6">
       <ToastViewport toasts={toasts} onDismiss={dismissToast} />
@@ -216,7 +246,7 @@ export default function Home() {
               </div>
 
               <div className="save-to-pdf">
-                <button className="h-10 w-full rounded-xl bg-zinc-900 px-4 text-sm font-medium text-white hover:cursor-pointer hover:bg-zinc-700 transition-colors dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-300">Save list to pdf</button>
+                <button onClick={() => saveToPdf()} className="h-10 w-full rounded-xl bg-zinc-900 px-4 text-sm font-medium text-white hover:cursor-pointer hover:bg-zinc-700 transition-colors dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-300">Save list to pdf</button>
               </div>
             </div>
 
