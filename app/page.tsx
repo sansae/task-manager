@@ -252,6 +252,8 @@ export default function Home() {
                 </div>
               </div>
 
+              <h3 className="text-center font-medium">Task List</h3>
+
               {filteredTasks.length === 0 ? (
                 <p className="text-sm text-zinc-600 dark:text-zinc-400">
                   {searchQuery.trim()

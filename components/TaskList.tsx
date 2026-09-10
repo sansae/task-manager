@@ -15,7 +15,7 @@ export default function TaskList({
   onToggleCompleteTask: (id: string, completed: boolean) => void;
 }) {
   return (
-    <ul className="flex w-full flex-col gap-2">
+    <ul className="task-list border rounded-3xl border-black h-[200px] overflow-y-auto flex w-full flex-col gap-2">
       {tasks.map((task) => (
         <li key={task.id}>
           <TaskItem
